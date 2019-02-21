@@ -39,10 +39,10 @@ module.exports = [
       library: 'vendor'
     },
     plugins: [
-      new webpack.DllPlugin({
-        name: 'vendor',
-        path: resolve(__dirname, 'dist/manifest.json')
-      })
+      // new webpack.DllPlugin({
+      //   name: 'vendor',
+      //   path: resolve(__dirname, 'dist/manifest.json')
+      // })
     ]
   },
   {
@@ -58,9 +58,9 @@ module.exports = [
       publicPath: '/dist/'
     },
     plugins: [
-      new webpack.DllReferencePlugin({
-        manifest: resolve(__dirname, 'dist/manifest.json')
-      })
+      // new webpack.DllReferencePlugin({
+      //   manifest: resolve(__dirname, 'dist/manifest.json')
+      // })
     ],
     module: {
       rules: [

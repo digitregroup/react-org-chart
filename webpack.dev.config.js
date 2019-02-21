@@ -40,10 +40,10 @@ module.exports = {
     publicPath: '/dist/'
   },
   plugins: [
-    new webpack.DllReferencePlugin({
-      context: resolve(__dirname, 'src'),
-      manifest: resolve(__dirname, 'dist/manifest.json')
-    })
+    // new webpack.DllReferencePlugin({
+    //   context: resolve(__dirname, 'src'),
+    //   manifest: resolve(__dirname, 'dist/manifest.json')
+    // })
   ],
   module: {
     rules: [
