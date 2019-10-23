@@ -27,6 +27,8 @@ const nameColor = '#222d38'
 const titleColor = '#617080'
 const reportsColor = '#92A0AD'
 
+const onClickCard = () => {};
+
 const config = {
   margin,
   animationDuration,
@@ -44,7 +46,8 @@ const config = {
   nameColor,
   titleColor,
   reportsColor,
-  shouldResize
+  shouldResize,
+  onClickCard
 }
 
 module.exports = config
