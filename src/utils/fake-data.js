@@ -44,6 +44,7 @@ function getPerson(id, { depth, department }) {
     id,
     avatar: faker.image.avatar(), // 'https://github.com/fouad.png',
     name: faker.name.firstName() + ' ' + faker.name.lastName(),
+    gain: 45.29,
     title: depth > 0 ? faker.name.jobTitle() : 'CEO',
     department: depth > 0 ? department || getDept() : ''
   }

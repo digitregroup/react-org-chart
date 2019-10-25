@@ -113,7 +113,7 @@ function init(options) {
     .on('zoom', renderUpdate(config))
 
   // Attach zoom behavior to the svg root
-  svgroot.call(zoom)
+  svgroot.call(zoom).on("dblclick.zoom", null);
 
   // Define the point of origin for zoom transformations
   zoom.translate([

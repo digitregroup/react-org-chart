@@ -64,6 +64,7 @@ function render(config) {
     .append('rect')
     .attr('width', nodeWidth)
     .attr('height', nodeHeight)
+    .attr('id', d => 'container-shadow-' + d.id)
     .attr('fill', backgroundColor)
     .attr('stroke', borderColor)
     .attr('rx', nodeBorderRadius)
@@ -83,7 +84,7 @@ function render(config) {
     .attr('rx', nodeBorderRadius)
     .attr('ry', nodeBorderRadius)
     .attr('class', 'box')
-    .style('cursor', helpers.getCursorForNode)
+    //style('cursor', helpers.getCursorForNode)
     .on('click', onClickCard)
 
   const namePos = {
@@ -97,14 +98,11 @@ function render(config) {
     .attr('class', PERSON_NAME_CLASS)
     .attr('x', namePos.x)
     .attr('y', namePos.y)
-    .attr('dy', '.3em')
     .style('fill', nameColor)
     .style('font-size', 16)
     .text(d => d.person.name)
-    .style('cursor', 'pointer')
-    .on('click', onClickCard)
 
-  // Person's Title
+  // Person's Gain
   nodeEnter
     .append('text')
     .attr('class', PERSON_TITLE_CLASS + ' unedited')
@@ -113,9 +111,7 @@ function render(config) {
     .attr('dy', '0.1em')
     .style('font-size', 14)
     .style('fill', titleColor)
-    .text(d => d.person.title)
-    .style('cursor', 'pointer')
-    .on('click', onClickCard)
+    .text(d => d.person.gain + ' €')
 
   const heightForTitle = 45 // getHeightForText(d.person.title)
 
@@ -130,11 +126,11 @@ function render(config) {
     .attr('src', d => d.person.avatar)
     .attr('xlink:href', d => d.person.avatar)
     .attr('clip-path', 'url(#avatarClip)')
-    .style('cursor', 'pointer')
+    //.style('cursor', 'pointer')
     .on('click', onClickCard)
 
   // Person's Department
-  nodeEnter
+  /*nodeEnter
     .append('text')
     .attr('class', getDepartmentClass)
     .attr('x', 34)
@@ -146,14 +142,14 @@ function render(config) {
     .style('font-size', 8)
     .attr('text-anchor', 'middle')
     .text(helpers.getTextForDepartment)
-
+*/
 
   const toggleChildrenLink = nodeEnter
     .append('g')
     .style('visibility', d => (d._children && d._children.length || !d.parent) ? 'visible' : 'hidden')
     .attr('stroke', 'none')
     .attr('fill', 'none')
-    .style('cursor', 'pointer')
+    //.style('cursor', 'pointer');
     
   toggleChildrenLink
     .append('text')
@@ -163,7 +159,7 @@ function render(config) {
     .attr('dy', '.9em')
     .style('font-size', 14)
     .style('font-weight', 500)
-    .style('cursor', 'pointer')
+    //.style('cursor', 'pointer')
     .style('fill', reportsColor)
     .text(helpers.getTextForTitle)
 
@@ -173,15 +169,55 @@ function render(config) {
     y: nodeHeight - 14
   });
 
+  let mouseDownCoords;
+  let mouseDownEvent;
+  const mouseMoveThreshold = 5;
+
   toggleChildrenLink
     .append('rect')
-    .attr('id', 'reports')
+    .attr('id', function(d, i) { return 'toogle-children-link-' + d.id })
     .attr('x', 0)
     .attr('y', nodeHeight - 24)
     .attr('width', nodeWidth)
     .attr('height', 24)
     .attr('fill', 'transparent')
-    .on('click', onClick(config));
+    .attr('fill-opacity', .05)
+    .style('cursor', 'pointer')
+    .on("mousedown", storeMousePosition)
+    .on('click', function(d) {
+      if (preventClick(mouseMoveThreshold)) {
+        onClick(config, d)
+      }
+    })
+    .on("mouseover", function(d,i){
+      d3.select("#toogle-children-link-" + d.id).style("fill", "#007DBC");
+    }).on("mouseout", function(d,i){
+      d3.select("#toogle-children-link-" + d.id).style("fill", "transparent");
+    });
+
+  
+  nodeEnter
+    .append('rect')
+    .attr('width', nodeWidth)
+    .attr('height', nodeHeight - 24)
+    .attr('id', d => 'action-box' + d.id)
+    .attr('fill', 'transparent')
+    .attr('stroke', 'transparent')
+    .attr('rx', nodeBorderRadius)
+    .attr('ry', nodeBorderRadius)
+    .on("mouseover", function(d,i){
+      d3.select("#container-shadow-" + d.id).transition().style("stroke-opacity", .8);
+    }).on("mouseout", function(d,i){
+      d3.select("#container-shadow-" + d.id).transition().style("stroke-opacity", .025);
+    })
+    .style('cursor', 'pointer')
+    .on("mousedown", storeMousePosition)
+    .on('click', function(d){ 
+      // we have reached a big enough distance to pass over to the zoom handler
+      if (preventClick(mouseMoveThreshold)) {
+        onClickCard(d) 
+      }
+    })
 
 
   // Transition nodes to their new position.
@@ -221,11 +257,18 @@ function render(config) {
   })
 }
 
-function getDepartmentClass(d) {
-  const { person } = d
-  const deptClass = person.department ? person.department.toLowerCase() : ''
+function storeMousePosition() {
+  // create a copy of the mousedown event to propagate later if needed
+  mouseDownEvent = new MouseEvent(d3.event.type, d3.event);
 
-  return [PERSON_DEPARTMENT_CLASS, deptClass].join(' ')
+  // keep coords handy to check distance to see if mouse moved far enough
+  mouseDownCoords = [mouseDownEvent.x, mouseDownEvent.y];
+}
+
+function preventClick(mouseMoveThreshold) {
+  const mouse = [d3.event.x, d3.event.y];
+  const distance = Math.sqrt(Math.pow(mouse[0] - mouseDownCoords[0], 2) + Math.pow(mouse[1] - mouseDownCoords[1], 2));
+  return distance <= mouseMoveThreshold;
 }
 
 module.exports = render
