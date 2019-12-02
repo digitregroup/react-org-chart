@@ -26,6 +26,13 @@ const borderColor = '#e6e8e9'
 const nameColor = '#222d38'
 const titleColor = '#617080'
 const reportsColor = '#92A0AD'
+const colorDepth= [
+  '#b14e4a',
+  '#006699',
+  '#009933',
+  '#993366',
+  '#996633'
+]
 
 const onClickCard = () => {};
 
@@ -45,6 +52,7 @@ const config = {
   borderColor,
   nameColor,
   titleColor,
+  colorDepth,
   reportsColor,
   shouldResize,
   onClickCard
