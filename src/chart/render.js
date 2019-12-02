@@ -10,6 +10,7 @@ const PERSON_TITLE_CLASS = 'org-chart-person-title'
 const PERSON_DEPARTMENT_CLASS = 'org-chart-person-dept'
 const PERSON_REPORTS_CLASS = 'org-chart-person-reports'
 
+
 function render(config) {
   const {
     svgroot,
@@ -24,6 +25,7 @@ function render(config) {
     backgroundColor,
     nameColor,
     titleColor,
+    colorDepth,
     reportsColor,
     borderColor,
     avatarWidth,
@@ -98,7 +100,7 @@ function render(config) {
     .attr('class', PERSON_NAME_CLASS)
     .attr('x', namePos.x)
     .attr('y', namePos.y)
-    .style('fill', nameColor)
+    .style('fill', d => colorDepth[d.depth])
     .style('font-size', 16)
     .text(d => d.person.name)
 
@@ -111,7 +113,7 @@ function render(config) {
     .attr('dy', '0.1em')
     .style('font-size', 14)
     .style('fill', titleColor)
-    .text(d => d.person.gain + ' €')
+    .text(d => d.person.prime + ' €')
 
   const heightForTitle = 45 // getHeightForText(d.person.title)
 
