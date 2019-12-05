@@ -29,11 +29,12 @@ function init(options) {
     lineType,
     margin,
     nodeWidth,
-    nodeHeight,
     nodeSpacing,
     shouldResize,
     orientationMode
-  } = config
+  } = config;
+
+  let {nodeHeight} = config;
 
   // Get the root element
   const elem = document.querySelector(id)
@@ -48,6 +49,11 @@ function init(options) {
 
   const elemWidth = elem.offsetWidth
   const elemHeight = elem.offsetHeight
+
+  if(orientationMode === 'horizontal') {
+    nodeHeight = nodeHeight - 24;
+    config.nodeHeight = nodeHeight;
+  }
 
   const orientations = {
     'horizontal': {
