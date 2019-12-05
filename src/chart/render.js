@@ -9,7 +9,9 @@ const PERSON_NAME_CLASS = 'org-chart-person-name'
 const PERSON_TITLE_CLASS = 'org-chart-person-title'
 const PERSON_DEPARTMENT_CLASS = 'org-chart-person-dept'
 const PERSON_REPORTS_CLASS = 'org-chart-person-reports'
-
+let mouseDownCoords;
+let mouseDownEvent;
+const mouseMoveThreshold = 5;
 
 function render(config) {
   const {
@@ -33,11 +35,13 @@ function render(config) {
     treeData,
     sourceNode,
     onPersonLinkClick,
-    onClickCard
+    onClickCard,
+    orientation,
+    orientationMode
   } = config
 
   // Compute the new tree layout.
-  const nodes = tree.nodes(treeData).reverse()
+  const nodes = tree.nodes(treeData)
   const links = tree.links(nodes)
 
   config.links = links
@@ -45,7 +49,7 @@ function render(config) {
 
   // Normalize for fixed-depth.
   nodes.forEach(function(d) {
-    d.y = d.depth * lineDepthY
+    d.y = d.depth * orientation.lineDepth
   })
 
   // Update the nodes
@@ -59,7 +63,7 @@ function render(config) {
     .enter()
     .insert('g')
     .attr('class', CHART_NODE_CLASS)
-    .attr('transform', `translate(${parentNode.x0}, ${parentNode.y0})`)
+    .attr('transform', `translate(${orientation.x0(parentNode)}, ${orientation.y0(parentNode)})`)
 
   // Person Card Shadow
   nodeEnter
@@ -86,7 +90,6 @@ function render(config) {
     .attr('rx', nodeBorderRadius)
     .attr('ry', nodeBorderRadius)
     .attr('class', 'box')
-    //style('cursor', helpers.getCursorForNode)
     .on('click', onClickCard)
 
   const namePos = {
@@ -115,7 +118,6 @@ function render(config) {
     .style('fill', titleColor)
     .text(d => d.person.prime + ' €')
 
-  const heightForTitle = 45 // getHeightForText(d.person.title)
 
   // Person's Avatar
   nodeEnter
@@ -128,60 +130,31 @@ function render(config) {
     .attr('src', d => d.person.avatar)
     .attr('xlink:href', d => d.person.avatar)
     .attr('clip-path', 'url(#avatarClip)')
-    //.style('cursor', 'pointer')
     .on('click', onClickCard)
 
-  // Person's Department
-  /*nodeEnter
-    .append('text')
-    .attr('class', getDepartmentClass)
-    .attr('x', 34)
-    .attr('y', avatarWidth + nodePaddingY * 1.2)
-    .attr('dy', '.9em')
-    //.style('cursor', 'pointer')
-    .style('fill', titleColor)
-    .style('font-weight', 600)
-    .style('font-size', 8)
-    .attr('text-anchor', 'middle')
-    .text(helpers.getTextForDepartment)
-*/
 
   const toggleChildrenLink = nodeEnter
     .append('g')
     .style('visibility', d => (d._children && d._children.length || !d.parent) ? 'visible' : 'hidden')
     .attr('stroke', 'none')
     .attr('fill', 'none')
-    //.style('cursor', 'pointer');
-    
-  toggleChildrenLink
-    .append('text')
-    .attr('class', PERSON_REPORTS_CLASS)
-    .attr('x', namePos.x)
-    .attr('y', nodeHeight - 20)
-    .attr('dy', '.9em')
-    .style('font-size', 14)
-    .style('font-weight', 500)
-    //.style('cursor', 'pointer')
-    .style('fill', reportsColor)
-    .text(helpers.getTextForTitle)
 
+  // 3.5 = arrow width or height / 2
   iconLink({
     svg: toggleChildrenLink,
-    x: namePos.x + 60,
-    y: nodeHeight - 14
+    x: orientationMode === 'vertical' ? nodeWidth / 2 - 3.5 : nodeWidth - 14 - 3.5,
+    y: orientationMode === 'vertical' ? nodeHeight - 14 - 3.5 : nodeHeight / 2 - 3.5,
+    orientation: orientation
   });
 
-  let mouseDownCoords;
-  let mouseDownEvent;
-  const mouseMoveThreshold = 5;
 
   toggleChildrenLink
     .append('rect')
     .attr('id', function(d, i) { return 'toogle-children-link-' + d.id })
-    .attr('x', 0)
-    .attr('y', nodeHeight - 24)
-    .attr('width', nodeWidth)
-    .attr('height', 24)
+    .attr('x', orientationMode === 'vertical' ? 0 : nodeWidth - 24)
+    .attr('y', orientationMode === 'vertical' ? nodeHeight - 24 : 0)
+    .attr('width', orientationMode === 'vertical' ? nodeWidth : 24)
+    .attr('height', orientationMode === 'vertical' ? 24 : nodeHeight)
     .attr('fill', 'transparent')
     .attr('fill-opacity', .05)
     .style('cursor', 'pointer')
@@ -200,8 +173,8 @@ function render(config) {
   
   nodeEnter
     .append('rect')
-    .attr('width', nodeWidth)
-    .attr('height', nodeHeight - 24)
+    .attr('width', orientationMode === 'vertical' ? nodeWidth : nodeWidth - 24)
+    .attr('height', orientationMode === 'vertical' ? nodeHeight - 24 : nodeHeight)
     .attr('id', d => 'action-box' + d.id)
     .attr('fill', 'transparent')
     .attr('stroke', 'transparent')
@@ -226,7 +199,7 @@ function render(config) {
   const nodeUpdate = node
     .transition()
     .duration(animationDuration)
-    .attr('transform', d => `translate(${d.x},${d.y})`)
+    .attr('transform', d => `translate(${orientation.x(d)}, ${orientation.y(d)})`)
 
   nodeUpdate
     .select('rect.box')
@@ -238,7 +211,7 @@ function render(config) {
     .exit()
     .transition()
     .duration(animationDuration)
-    .attr('transform', d => `translate(${parentNode.x},${parentNode.y})`)
+    .attr('transform', `translate(${orientation.x(parentNode)}, ${orientation.y(parentNode)})`)
     .remove()
 
   // Update the links

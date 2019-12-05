@@ -31,16 +31,9 @@ function init(options) {
     nodeWidth,
     nodeHeight,
     nodeSpacing,
-    shouldResize
+    shouldResize,
+    orientationMode
   } = config
-
-  // Calculate how many pixel nodes to be spaced based on the
-  // type of line that needs to be rendered
-  if (lineType == 'angle') {
-    config.lineDepthY = nodeHeight + 40
-  } else {
-    config.lineDepthY = nodeHeight + 60
-  }
 
   // Get the root element
   const elem = document.querySelector(id)
@@ -56,13 +49,57 @@ function init(options) {
   const elemWidth = elem.offsetWidth
   const elemHeight = elem.offsetHeight
 
+  const orientations = {
+    'horizontal': {
+      nodeSize: [nodeHeight + nodeSpacing, nodeWidth + nodeSpacing],
+      x: function(d) { return d.y; },
+      y: function(d) { return d.x; },
+      x0: function(d) { return d.y0; },
+      y0: function(d) { return d.x0; },
+      lineDepth: nodeWidth + 40,
+      xLineSize: nodeHeight,
+      yLineSize: nodeWidth,
+      initialTranslate: {
+        x: 20,
+        y: parseInt(elemHeight / 2 - nodeHeight / 2)
+      },
+      arrowCollapseAngle: 135,
+      arrowExpandAngle: 315
+    },
+    'vertical': {
+      nodeSize: [nodeWidth + nodeSpacing, nodeHeight + nodeSpacing],
+      x: function(d) { return d.x; },
+      y: function(d) { return d.y; },
+      x0: function(d) { return d.x0; },
+      y0: function(d) { return d.y0; },
+      lineDepth: nodeHeight + 40,
+      xLineSize: nodeWidth,
+      yLineSize: nodeHeight,
+      initialTranslate: {
+        x: parseInt(elemWidth / 2 - nodeWidth / 2),
+        y: 20
+      },
+      arrowCollapseAngle: 45,
+      arrowExpandAngle: 225
+    }
+  }
+
+  const orientation = orientations[orientationMode];
+  config.orientation = orientation;
+
+  // Calculate how many pixel nodes to be spaced based on the
+  // type of line that needs to be rendered
+  if (lineType == 'angle') {
+    config.lineDepthY = nodeHeight + 40
+  } else {
+    config.lineDepthY = nodeHeight + 60
+  }
+
   // Setup the d3 tree layout
   config.tree = d3.layout
     .tree()
-    .nodeSize([nodeWidth + nodeSpacing, nodeHeight + nodeSpacing])
+    .nodeSize(orientation.nodeSize)
 
-  // Calculate width of a node with expanded children
-  const childrenWidth = parseInt(treeData.children.length * nodeWidth / 2)
 
   // Add svg root for d3
   const svgroot = d3
@@ -74,16 +111,7 @@ function init(options) {
   // Add our base svg group to transform when a user zooms/pans
   const svg = svgroot
     .append('g')
-    .attr(
-      'transform',
-      'translate(' +
-        parseInt(
-          childrenWidth + (elemWidth - childrenWidth * 2) / 2 - margin.left / 2
-        ) +
-        ',' +
-        20 +
-        ')'
-    )
+    .attr('transform', 'translate(' + orientation.initialTranslate.x + ',' + orientation.initialTranslate.y + ')')
 
   // Define box shadow and avatar border radius
   defineBoxShadow(svgroot, 'boxShadow')
@@ -116,12 +144,7 @@ function init(options) {
   svgroot.call(zoom).on("dblclick.zoom", null);
 
   // Define the point of origin for zoom transformations
-  zoom.translate([
-    parseInt(
-      childrenWidth + (elemWidth - childrenWidth * 2) / 2 - margin.left / 2
-    ),
-    20
-  ])
+  zoom.translate([orientation.initialTranslate.x, orientation.initialTranslate.y])
 
   // Add listener for when the browser or parent node resizes
   const resize = () => {
