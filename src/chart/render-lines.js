@@ -13,7 +13,8 @@ function renderLines(config = {}) {
     sourceNode,
     treeData,
     lineType,
-    animationDuration
+    animationDuration,
+    orientation
   } = config
 
   const parentNode = sourceNode || treeData
@@ -31,8 +32,8 @@ function renderLines(config = {}) {
   // Define the angled line function
   const angle = d3.svg
     .line()
-    .x(d => d.x)
-    .y(d => d.y)
+    .x(d => orientation.x(d))
+    .y(d => orientation.y(d))
     .interpolate('linear')
 
   if (lineType === 'angle') {
@@ -48,20 +49,20 @@ function renderLines(config = {}) {
       .attr('d', d => {
         const linePoints = [
           {
-            x: d.source.x0 + parseInt(nodeWidth / 2),
-            y: d.source.y0 + nodeHeight + 2
+            x: d.source.x0 + parseInt(orientation.xLineSize / 2),
+            y: d.source.y0 + orientation.yLineSize + 2
           },
           {
-            x: d.source.x0 + parseInt(nodeWidth / 2),
-            y: d.source.y0 + nodeHeight + 2
+            x: d.source.x0 + parseInt(orientation.xLineSize / 2),
+            y: d.source.y0 + orientation.yLineSize + 2
           },
           {
-            x: d.source.x0 + parseInt(nodeWidth / 2),
-            y: d.source.y0 + nodeHeight + 2
+            x: d.source.x0 + parseInt(orientation.xLineSize / 2),
+            y: d.source.y0 + orientation.yLineSize + 2
           },
           {
-            x: d.source.x0 + parseInt(nodeWidth / 2),
-            y: d.source.y0 + nodeHeight + 2
+            x: d.source.x0 + parseInt(orientation.xLineSize / 2),
+            y: d.source.y0 + orientation.yLineSize + 2
           }
         ]
 
@@ -75,19 +76,19 @@ function renderLines(config = {}) {
       .attr('d', d => {
         const linePoints = [
           {
-            x: d.source.x + parseInt(nodeWidth / 2),
-            y: d.source.y + nodeHeight
+            x: d.source.x + parseInt(orientation.xLineSize / 2),
+            y: d.source.y + orientation.yLineSize
           },
           {
-            x: d.source.x + parseInt(nodeWidth / 2),
+            x: d.source.x + parseInt(orientation.xLineSize / 2),
             y: d.target.y - margin.top / 2
           },
           {
-            x: d.target.x + parseInt(nodeWidth / 2),
+            x: d.target.x + parseInt(orientation.xLineSize / 2),
             y: d.target.y - margin.top / 2
           },
           {
-            x: d.target.x + parseInt(nodeWidth / 2),
+            x: d.target.x + parseInt(orientation.xLineSize / 2),
             y: d.target.y
           }
         ]
@@ -103,20 +104,20 @@ function renderLines(config = {}) {
       .attr('d', d => {
         const linePoints = [
           {
-            x: config.callerNode.x + parseInt(nodeWidth / 2),
-            y: config.callerNode.y + nodeHeight + 2
+            x: config.callerNode.x + parseInt(orientation.xLineSize / 2),
+            y: config.callerNode.y + orientation.yLineSize + 2
           },
           {
-            x: config.callerNode.x + parseInt(nodeWidth / 2),
-            y: config.callerNode.y + nodeHeight + 2
+            x: config.callerNode.x + parseInt(orientation.xLineSize / 2),
+            y: config.callerNode.y + orientation.yLineSize + 2
           },
           {
-            x: config.callerNode.x + parseInt(nodeWidth / 2),
-            y: config.callerNode.y + nodeHeight + 2
+            x: config.callerNode.x + parseInt(orientation.xLineSize / 2),
+            y: config.callerNode.y + orientation.yLineSize + 2
           },
           {
-            x: config.callerNode.x + parseInt(nodeWidth / 2),
-            y: config.callerNode.y + nodeHeight + 2
+            x: config.callerNode.x + parseInt(orientation.xLineSize / 2),
+            y: config.callerNode.y + orientation.yLineSize + 2
           }
         ]
 
