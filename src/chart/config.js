@@ -34,6 +34,8 @@ const colorDepth= [
   '#996633'
 ]
 
+const orientationMode = 'horizontal';  /* other choise "vertical" */
+
 const onClickCard = () => {};
 
 const config = {
@@ -55,6 +57,7 @@ const config = {
   colorDepth,
   reportsColor,
   shouldResize,
+  orientationMode,
   onClickCard
 }
 

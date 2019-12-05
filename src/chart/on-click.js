@@ -4,7 +4,7 @@ const { collapse } = require('../utils')
 module.exports = onClick
 
 function onClick(config = {}, datum) {
-  const { treeData, loadChildren, render, onPersonClick, svg } = config
+  const { treeData, loadChildren, render, onPersonClick, svg, orientation } = config
   const arrow = d3.select("#arrow" + datum.person.id);
 
   if (onPersonClick) {
@@ -44,14 +44,14 @@ function onClick(config = {}, datum) {
     config.callerMode = 0
     datum._children = datum.children
     datum.children = null
-    arrow.attr('transform', 'translate(3.5, 3.5) scale(-1, 1) translate(-3.5, -3.5) rotate(225, 3.5, 3.5)');
+    arrow.attr('transform', 'translate(3.5, 3.5) scale(-1, 1) translate(-3.5, -3.5) rotate(' + orientation.arrowExpandAngle + ', 3.5, 3.5)');
   } else {
     // Expand the children
     config.callerNode = datum
     config.callerMode = 1
     datum.children = datum._children
     datum._children = null
-    arrow.attr('transform', 'translate(3.5, 3.5) scale(-1, 1) translate(-3.5, -3.5) rotate(45, 3.5, 3.5)');
+    arrow.attr('transform', 'translate(3.5, 3.5) scale(-1, 1) translate(-3.5, -3.5) rotate(' + orientation.arrowCollapseAngle + ', 3.5, 3.5)');
   }
 
   // Pass in the clicked datum as the sourceNode which
