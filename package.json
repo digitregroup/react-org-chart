@@ -1,6 +1,6 @@
 {
   "name": "@latticehr/react-org-chart",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "description": "Simple, high-performance react component for d3 org chart",
   "repository": "https://github.com/latticehr/react-org-chart.git",
   "main": "dist/index.js",
@@ -38,9 +38,11 @@
     "d3": "^3"
   },
   "peerDependencies": {
-    "d3": ">= 3.x < 4",
     "react": ">= 15.x",
     "react-dom": ">= 15.x"
+  },
+  "dependencies": {
+    "d3": ">= 3.x < 4"
   },
   "babel": {
     "presets": [
