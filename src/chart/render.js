@@ -28,6 +28,7 @@ function render(config) {
     nameColor,
     titleColor,
     colorDepth,
+    isGoneColor,
     reportsColor,
     borderColor,
     avatarWidth,
@@ -103,7 +104,7 @@ function render(config) {
     .attr('class', PERSON_NAME_CLASS)
     .attr('x', namePos.x)
     .attr('y', namePos.y)
-    .style('fill', d => colorDepth[d.depth])
+    .style('fill', d => (d.person.isGone) ? isGoneColor : colorDepth[d.depth])
     .style('font-size', 16)
     .text(d => d.person.name)
 
