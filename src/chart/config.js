@@ -26,6 +26,7 @@ const borderColor = '#e6e8e9'
 const nameColor = '#222d38'
 const titleColor = '#617080'
 const reportsColor = '#92A0AD'
+const isGoneColor = '#888888'
 const colorDepth= [
   '#b14e4a',
   '#006699',
@@ -55,6 +56,7 @@ const config = {
   nameColor,
   titleColor,
   colorDepth,
+  isGoneColor,
   reportsColor,
   shouldResize,
   orientationMode,
