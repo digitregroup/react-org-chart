@@ -117,7 +117,7 @@ function render(config) {
     .attr('dy', '0.1em')
     .style('font-size', 14)
     .style('fill', titleColor)
-    .text(d => d.person.primeHT + ' €')
+    .text(d => (Math.round(d.person.primeHT * 100) / 100) + ' €')
 
 
   // Person's Avatar
