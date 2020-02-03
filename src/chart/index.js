@@ -130,7 +130,9 @@ function init(options) {
   treeData.y0 = elemHeight / 2
 
   // Collapse all of the children on initial load
-  treeData.children.forEach(collapse)
+  if(treeData.children) {
+    treeData.children.forEach(collapse)
+  }
 
   // Connect core variables to config so that they can be
   // used in internal rendering functions
