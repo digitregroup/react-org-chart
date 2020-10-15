@@ -31,7 +31,8 @@ function init(options) {
     nodeWidth,
     nodeSpacing,
     shouldResize,
-    orientationMode
+    orientationMode,
+    initAllOpen
   } = config;
 
   let {nodeHeight} = config;
@@ -131,7 +132,7 @@ function init(options) {
 
   // Collapse all of the children on initial load
   if(treeData.children) {
-    treeData.children.forEach(collapse)
+    treeData.children.forEach((c)=> collapse(c, initAllOpen))
   }
 
   // Connect core variables to config so that they can be

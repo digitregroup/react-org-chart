@@ -104,7 +104,10 @@ function render(config) {
     .attr('class', PERSON_NAME_CLASS)
     .attr('x', namePos.x)
     .attr('y', namePos.y)
-    .style('fill', d => (d.person.isGone) ? isGoneColor : colorDepth[d.depth])
+    .style('fill', d => {
+      const isGone = typeof(d.isGone) !== 'undefined' ? d.isGone : d.person.isGone;
+      return isGone ? isGoneColor : colorDepth[d.depth];
+    })
     .style('font-size', 16)
     .text(d => d.person.name)
 
@@ -117,7 +120,13 @@ function render(config) {
     .attr('dy', '0.1em')
     .style('font-size', 14)
     .style('fill', titleColor)
-    .text(d => (Math.round((d.person.primeHT + (d.person.primeFirstHT || 0)) * 100) / 100) + ' €')
+    .text(d => {
+      if(typeof(d.primeHT) !== 'undefined') {
+        return d.primeHT !== null ? (Math.round(d.primeHT * 100) / 100) + ' €' : '-';
+      } else {
+        return (Math.round((d.person.primeHT + (d.person.primeFirstHT || 0)) * 100) / 100) + ' €'
+      }
+    });
 
 
   // Person's Avatar
@@ -222,15 +231,15 @@ function render(config) {
   const wrapWidth = 140
 
   svg.selectAll('text.unedited.' + PERSON_TITLE_CLASS).call(wrapText, wrapWidth)
-
-  // Render lines connecting nodes
-  renderLines(config)
-
+  
   // Stash the old positions for transition.
   nodes.forEach(function(d) {
     d.x0 = d.x
     d.y0 = d.y
   })
+  
+    // Render lines connecting nodes
+    renderLines(config)
 }
 
 function storeMousePosition() {
